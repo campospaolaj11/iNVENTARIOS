@@ -1,0 +1,12 @@
+# Netlify Build Configuration
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Environment variables (configurar en Netlify UI)
+# VITE_API_URL = https://tu-backend.railway.app

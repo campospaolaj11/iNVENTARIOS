@@ -1,0 +1,44 @@
+name: inventario_scanner
+description: App móvil para escanear códigos QR/Barras del sistema de inventarios
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # UI
+  cupertino_icons: ^1.0.6
+  flutter_svg: ^2.0.9
+  
+  # Scanner QR/Barras
+  mobile_scanner: ^3.5.5
+  qr_flutter: ^4.1.0
+  
+  # HTTP y Networking
+  http: ^1.1.2
+  dio: ^5.4.0
+  
+  # Estado y gestión
+  provider: ^6.1.1
+  shared_preferences: ^2.2.2
+  
+  # Utilidades
+  intl: ^0.18.1
+  flutter_launcher_icons: ^0.13.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1
+
+flutter:
+  uses-material-design: true
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/icon.png"

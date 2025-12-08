@@ -1,0 +1,193 @@
+{
+  "kpis": {
+    "total_productos": 45,
+    "productos_criticos": 8,
+    "valor_inventario": 125430.50,
+    "costo_almacenamiento_total": 2340.75,
+    "rotacion_promedio": 3.2,
+    "fecha_calculo": "2025-12-08T10:30:00"
+  },
+  "productos": [
+    {
+      "id": 1,
+      "codigo": "PROD001",
+      "nombre": "Tornillo M8x20",
+      "descripcion": "Tornillo métrico 8mm x 20mm",
+      "categoria": "Ferretería",
+      "stock_actual": 150,
+      "stock_minimo": 50,
+      "stock_maximo": 500,
+      "costo_unitario": 0.15,
+      "precio_venta": 0.30,
+      "ubicacion_bodega": "A-01"
+    },
+    {
+      "id": 2,
+      "codigo": "PROD002",
+      "nombre": "Tuerca M8",
+      "descripcion": "Tuerca hexagonal M8",
+      "categoria": "Ferretería",
+      "stock_actual": 200,
+      "stock_minimo": 50,
+      "stock_maximo": 500,
+      "costo_unitario": 0.10,
+      "precio_venta": 0.20,
+      "ubicacion_bodega": "A-02"
+    },
+    {
+      "id": 3,
+      "codigo": "PROD003",
+      "nombre": "Arandela M8",
+      "descripcion": "Arandela plana M8",
+      "categoria": "Ferretería",
+      "stock_actual": 30,
+      "stock_minimo": 50,
+      "stock_maximo": 500,
+      "costo_unitario": 0.05,
+      "precio_venta": 0.10,
+      "ubicacion_bodega": "A-03"
+    },
+    {
+      "id": 4,
+      "codigo": "PROD004",
+      "nombre": "Cable 2x14 AWG",
+      "descripcion": "Cable eléctrico 2x14 (metro)",
+      "categoria": "Eléctricos",
+      "stock_actual": 500,
+      "stock_minimo": 100,
+      "stock_maximo": 2000,
+      "costo_unitario": 1.50,
+      "precio_venta": 3.00,
+      "ubicacion_bodega": "B-01"
+    },
+    {
+      "id": 5,
+      "codigo": "PROD005",
+      "nombre": "Interruptor Simple",
+      "descripcion": "Interruptor simple 15A",
+      "categoria": "Eléctricos",
+      "stock_actual": 80,
+      "stock_minimo": 20,
+      "stock_maximo": 200,
+      "costo_unitario": 2.50,
+      "precio_venta": 5.00,
+      "ubicacion_bodega": "B-02"
+    },
+    {
+      "id": 6,
+      "codigo": "PROD006",
+      "nombre": "Codo PVC 1/2",
+      "descripcion": "Codo PVC 90 grados 1/2 pulgada",
+      "categoria": "Plomería",
+      "stock_actual": 120,
+      "stock_minimo": 40,
+      "stock_maximo": 300,
+      "costo_unitario": 0.45,
+      "precio_venta": 0.90,
+      "ubicacion_bodega": "C-01"
+    },
+    {
+      "id": 7,
+      "codigo": "PROD007",
+      "nombre": "Tubo PVC 1/2",
+      "descripcion": "Tubo PVC 1/2 pulgada x 3 metros",
+      "categoria": "Plomería",
+      "stock_actual": 25,
+      "stock_minimo": 30,
+      "stock_maximo": 150,
+      "costo_unitario": 3.20,
+      "precio_venta": 6.50,
+      "ubicacion_bodega": "C-02"
+    },
+    {
+      "id": 8,
+      "codigo": "PROD008",
+      "nombre": "Pintura Blanca 1GL",
+      "descripcion": "Pintura látex blanca 1 galón",
+      "categoria": "Pintura",
+      "stock_actual": 45,
+      "stock_minimo": 15,
+      "stock_maximo": 100,
+      "costo_unitario": 12.50,
+      "precio_venta": 25.00,
+      "ubicacion_bodega": "D-01"
+    },
+    {
+      "id": 9,
+      "codigo": "PROD009",
+      "nombre": "Brocha 3 pulgadas",
+      "descripcion": "Brocha profesional 3 pulgadas",
+      "categoria": "Herramientas",
+      "stock_actual": 60,
+      "stock_minimo": 20,
+      "stock_maximo": 100,
+      "costo_unitario": 4.75,
+      "precio_venta": 9.50,
+      "ubicacion_bodega": "E-01"
+    },
+    {
+      "id": 10,
+      "codigo": "PROD010",
+      "nombre": "Martillo 16oz",
+      "descripcion": "Martillo de uña 16 onzas",
+      "categoria": "Herramientas",
+      "stock_actual": 15,
+      "stock_minimo": 10,
+      "stock_maximo": 50,
+      "costo_unitario": 8.90,
+      "precio_venta": 17.80,
+      "ubicacion_bodega": "E-02"
+    }
+  ],
+  "stock_por_categoria": [
+    { "categoria": "Ferretería", "stock": 380, "minimo": 150, "valor": 57000 },
+    { "categoria": "Eléctricos", "stock": 580, "minimo": 120, "valor": 42500 },
+    { "categoria": "Plomería", "stock": 145, "minimo": 70, "valor": 15600 },
+    { "categoria": "Pintura", "stock": 45, "minimo": 15, "valor": 5625 },
+    { "categoria": "Herramientas", "stock": 75, "minimo": 30, "valor": 4705.5 }
+  ],
+  "productos_criticos": [
+    {
+      "codigo": "PROD003",
+      "nombre": "Arandela M8",
+      "categoria": "Ferretería",
+      "stock_actual": 30,
+      "stock_minimo": 50,
+      "unidades_faltantes": 20
+    },
+    {
+      "codigo": "PROD007",
+      "nombre": "Tubo PVC 1/2",
+      "categoria": "Plomería",
+      "stock_actual": 25,
+      "stock_minimo": 30,
+      "unidades_faltantes": 5
+    }
+  ],
+  "movimientos_recientes": [
+    {
+      "id": 1,
+      "producto_codigo": "PROD001",
+      "tipo": "ENTRADA",
+      "cantidad": 100,
+      "fecha": "2025-12-01T09:00:00",
+      "referencia": "PO-2025-001"
+    },
+    {
+      "id": 2,
+      "producto_codigo": "PROD001",
+      "tipo": "SALIDA",
+      "cantidad": 50,
+      "fecha": "2025-12-03T14:30:00",
+      "referencia": "SO-2025-001"
+    },
+    {
+      "id": 3,
+      "producto_codigo": "PROD004",
+      "tipo": "ENTRADA",
+      "cantidad": 200,
+      "fecha": "2025-12-05T10:15:00",
+      "referencia": "PO-2025-002"
+    }
+  ]
+}
