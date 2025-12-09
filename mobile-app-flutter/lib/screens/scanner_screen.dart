@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:provider/provider.dart';
 import '../providers/inventory_provider.dart';
+import '../services/sound_service.dart';
+import '../services/offline_service.dart';
 
 class ScannerScreen extends StatefulWidget {
   const ScannerScreen({super.key});
@@ -18,6 +20,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
   );
 
   bool _isProcessing = false;
+  final OfflineService _offlineService = OfflineService();
 
   @override
   void dispose() {
@@ -45,27 +48,83 @@ class _ScannerScreenState extends State<ScannerScreen> {
 
     // Escanear código
     final provider = context.read<InventoryProvider>();
-    await provider.escanearCodigo(code);
+    
+    try {
+      await provider.escanearCodigo(code);
 
-    if (mounted) {
-      if (provider.errorMessage != null) {
-        // Mostrar error
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(provider.errorMessage!),
-            backgroundColor: Colors.red,
-          ),
-        );
-        setState(() {
-          _isProcessing = false;
-        });
-      } else {
-        // Navegar a detalles
-        Navigator.pushNamed(context, '/product-detail').then((_) {
+      if (mounted) {
+        if (provider.errorMessage != null) {
+          // Sonido de error
+          await SoundService.playError();
+          
+          // Guardar en offline para intentar después
+          await _offlineService.guardarEscaneo(code, DateTime.now());
+          
+          // Mostrar error
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('${provider.errorMessage}\n(Guardado offline)'),
+              backgroundColor: Colors.orange,
+              duration: const Duration(seconds: 3),
+            ),
+          );
           setState(() {
             _isProcessing = false;
           });
-        });
+        } else {
+          // Sonido de éxito
+          await SoundService.playSuccess();
+          
+          // Cachear producto
+          if (provider.selectedProduct != null) {
+            await _offlineService.cachearProducto(provider.selectedProduct!);
+          }
+          
+          // Navegar a detalles
+          Navigator.pushNamed(context, '/product-detail').then((_) {
+            setState(() {
+              _isProcessing = false;
+            });
+          });
+        }
+      }
+    } catch (e) {
+      // Error de conexión - modo offline
+      await SoundService.playWarning();
+      
+      // Guardar escaneo offline
+      await _offlineService.guardarEscaneo(code, DateTime.now());
+      
+      // Buscar en caché
+      final cachedProduct = await _offlineService.buscarProductoEnCache(code);
+      
+      if (mounted) {
+        if (cachedProduct != null) {
+          provider.setSelectedProduct(cachedProduct);
+          
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Modo Offline: Producto desde caché'),
+              backgroundColor: Colors.blue,
+            ),
+          );
+          
+          Navigator.pushNamed(context, '/product-detail').then((_) {
+            setState(() {
+              _isProcessing = false;
+            });
+          });
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Sin conexión. Escaneo guardado para sincronizar.'),
+              backgroundColor: Colors.orange,
+            ),
+          );
+          setState(() {
+            _isProcessing = false;
+          });
+        }
       }
     }
   }

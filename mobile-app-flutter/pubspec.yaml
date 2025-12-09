@@ -29,6 +29,12 @@ dependencies:
   # Utilidades
   intl: ^0.18.1
   flutter_launcher_icons: ^0.13.1
+  
+  # Gráficas y visualización
+  fl_chart: ^0.66.0
+  
+  # Sonido
+  audioplayers: ^5.2.1
 
 dev_dependencies:
   flutter_test:

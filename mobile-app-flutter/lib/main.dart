@@ -5,8 +5,10 @@ import 'screens/scanner_screen.dart';
 import 'screens/product_detail_screen.dart';
 import 'screens/movement_screen.dart';
 import 'screens/history_screen.dart';
+import 'screens/chart_screen.dart';
 import 'providers/inventory_provider.dart';
 import 'services/api_service.dart';
+import 'services/sync_service.dart';
 
 void main() {
   runApp(const InventarioApp());
@@ -21,6 +23,9 @@ class InventarioApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(
           create: (_) => InventoryProvider(ApiService()),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => SyncService(),
         ),
       ],
       child: MaterialApp(
@@ -56,6 +61,7 @@ class InventarioApp extends StatelessWidget {
           '/product-detail': (context) => const ProductDetailScreen(),
           '/movement': (context) => const MovementScreen(),
           '/history': (context) => const HistoryScreen(),
+          '/charts': (context) => const ChartScreen(),
         },
       ),
     );

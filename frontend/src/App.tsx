@@ -16,41 +16,44 @@ function App() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <header className="page-header">
-        <div className="container mx-auto px-4 py-8 relative z-10">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <header className="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 shadow-xl sticky top-0 z-50">
+        <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="bg-white/20 backdrop-blur-sm p-3 rounded-xl">
-                <span className="text-5xl">📦</span>
+            {/* Logo y Título - Compacto */}
+            <div className="flex items-center gap-4">
+              <div className="relative group">
+                <div className="absolute inset-0 bg-white/20 blur-lg rounded-xl"></div>
+                <div className="relative bg-white/90 backdrop-blur-sm p-2.5 rounded-xl shadow-lg group-hover:scale-105 transition-transform">
+                  <span className="text-3xl">📦</span>
+                </div>
               </div>
               <div>
-                <h1 className="text-4xl font-bold tracking-tight">Sistema de Inventarios</h1>
-                <p className="text-primary-100 mt-1 text-lg">Dashboard de Control y Análisis en Tiempo Real</p>
+                <h1 className="text-2xl font-black text-white tracking-tight">
+                  Sistema de Inventarios
+                </h1>
+                <p className="text-blue-100 text-xs font-medium mt-0.5">Dashboard Profesional</p>
               </div>
             </div>
-            <div className="hidden md:flex items-center space-x-4">
-              <div className="text-sm bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/30">
-                <span className="text-primary-100">Estado:</span>
-                <span className="ml-2 font-semibold">{apiStatus}</span>
+            
+            {/* Indicadores - Compactos */}
+            <div className="flex items-center gap-3">
+              <div className="bg-white/15 backdrop-blur-md px-4 py-2 rounded-lg border border-white/25 flex items-center gap-2">
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                <span className="text-white text-sm font-semibold">{apiStatus}</span>
               </div>
-              <div className="text-sm bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/30">
-                <span className="text-primary-100">Última actualización:</span>
-                <span className="ml-2 font-semibold">{new Date().toLocaleDateString('es-MX')}</span>
+              <div className="bg-white/15 backdrop-blur-md px-4 py-2 rounded-lg border border-white/25 flex items-center gap-2">
+                <span className="text-xl">🕐</span>
+                <span className="text-white text-sm font-semibold">
+                  {new Date().toLocaleDateString('es-MX', { day: '2-digit', month: 'short' })}
+                </span>
               </div>
             </div>
           </div>
         </div>
-        
-        {/* Decoración ondas */}
-        <div className="absolute bottom-0 left-0 right-0">
-          <svg viewBox="0 0 1440 120" className="w-full h-auto">
-            <path fill="#f8fafc" fillOpacity="1" d="M0,64L48,69.3C96,75,192,85,288,80C384,75,480,53,576,48C672,43,768,53,864,58.7C960,64,1056,64,1152,58.7C1248,53,1344,43,1392,37.3L1440,32L1440,120L1392,120C1344,120,1248,120,1152,120C1056,120,960,120,864,120C768,120,672,120,576,120C480,120,384,120,288,120C192,120,96,120,48,120L0,120Z"></path>
-          </svg>
-        </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8 -mt-8 relative z-20">
+      <main className="container mx-auto px-6 py-8">
         <Dashboard />
       </main>
 

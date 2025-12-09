@@ -9,6 +9,7 @@ load_dotenv()
 
 # Importar routers
 from routes.scanner import router as scanner_router
+from routes.notificaciones import router as notificaciones_router
 
 # Crear aplicación FastAPI
 app = FastAPI(
@@ -36,6 +37,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Registrar routers
 app.include_router(scanner_router)
+app.include_router(notificaciones_router)
 
 @app.get("/")
 async def root():

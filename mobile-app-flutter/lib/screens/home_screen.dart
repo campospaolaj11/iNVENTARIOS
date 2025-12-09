@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/inventory_provider.dart';
+import '../services/sync_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -144,6 +145,15 @@ class _HomeScreenState extends State<HomeScreen> {
                         route: '/movement',
                         arguments: {'tipo': 'SALIDA'},
                       ),
+                      _buildMenuCard(
+                        context,
+                        icon: Icons.bar_chart,
+                        title: 'Gráficas',
+                        subtitle: 'Estadísticas',
+                        color: Colors.orange,
+                        route: '/charts',
+                      ),
+                      _buildSyncCard(context),
                     ],
                   ),
                 ),
@@ -259,6 +269,129 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildSyncCard(BuildContext context) {
+    return Consumer<SyncService>(
+      builder: (context, syncService, child) {
+        return Card(
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: InkWell(
+            onTap: syncService.isSyncing ? null : () async {
+              await syncService.sincronizarTodo();
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(syncService.lastSyncStatus ?? 'Sincronizado'),
+                    backgroundColor: syncService.pendingOperations == 0 
+                        ? Colors.green 
+                        : Colors.orange,
+                  ),
+                );
+              }
+            },
+            borderRadius: BorderRadius.circular(20),
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Colors.teal.withOpacity(0.1),
+                    Colors.teal.withOpacity(0.05),
+                  ],
+                ),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 60,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      color: Colors.teal,
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.teal.withOpacity(0.3),
+                          blurRadius: 10,
+                          offset: const Offset(0, 5),
+                        ),
+                      ],
+                    ),
+                    child: syncService.isSyncing
+                        ? const Padding(
+                            padding: EdgeInsets.all(15),
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 3,
+                            ),
+                          )
+                        : Stack(
+                            children: [
+                              const Center(
+                                child: Icon(
+                                  Icons.cloud_sync,
+                                  size: 30,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              if (syncService.pendingOperations > 0)
+                                Positioned(
+                                  top: 5,
+                                  right: 5,
+                                  child: Container(
+                                    padding: const EdgeInsets.all(4),
+                                    decoration: const BoxDecoration(
+                                      color: Colors.red,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Text(
+                                      '${syncService.pendingOperations}',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'Sincronizar',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.teal,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    syncService.pendingOperations > 0
+                        ? '${syncService.pendingOperations} pendiente${syncService.pendingOperations > 1 ? 's' : ''}'
+                        : 'Todo sincronizado',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey.shade600,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
