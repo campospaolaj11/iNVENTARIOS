@@ -12,10 +12,99 @@ interface Product {
   descripcion?: string
 }
 
+interface QRModalProps {
+  isOpen: boolean
+  onClose: () => void
+  product: Product | null
+  type: 'producto' | 'almacen'
+}
+
+function QRModal({ isOpen, onClose, product, type }: QRModalProps) {
+  if (!isOpen || !product) return null
+
+  const qrData = type === 'producto' 
+    ? `PRODUCTO:${product.codigo}:${product.nombre}` 
+    : `ALMACEN:${product.ubicacion_bodega}`
+  
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrData)}`
+
+  const handleDownloadQR = () => {
+    const link = document.createElement('a')
+    link.href = qrUrl
+    link.download = `QR_${type}_${type === 'producto' ? product.codigo : product.ubicacion_bodega}.png`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 transform transition-all animate-scale-up">
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-2xl font-black text-gray-800 flex items-center gap-2">
+            <span className="text-3xl">📱</span>
+            Código QR {type === 'producto' ? 'del Producto' : 'del Almacén'}
+          </h3>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 text-2xl font-bold transition-colors"
+          >
+            ×
+          </button>
+        </div>
+
+        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 mb-6">
+          <div className="flex justify-center mb-4">
+            <img 
+              src={qrUrl} 
+              alt={`QR ${type}`}
+              className="w-64 h-64 border-4 border-white rounded-xl shadow-lg"
+            />
+          </div>
+          
+          <div className="text-center space-y-2">
+            <p className="text-sm font-bold text-gray-700">
+              {type === 'producto' ? (
+                <>
+                  <span className="text-blue-600">Código:</span> {product.codigo}
+                  <br />
+                  <span className="text-blue-600">Producto:</span> {product.nombre}
+                </>
+              ) : (
+                <>
+                  <span className="text-blue-600">Ubicación:</span> {product.ubicacion_bodega}
+                </>
+              )}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex gap-3">
+          <button
+            onClick={handleDownloadQR}
+            className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 font-bold"
+          >
+            📥 Descargar QR
+          </button>
+          <button
+            onClick={onClose}
+            className="px-6 py-3 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition-all font-bold"
+          >
+            Cerrar
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function ProductsTable() {
   const [products, setProducts] = useState<Product[]>([])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
+  const [qrModalOpen, setQrModalOpen] = useState(false)
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
+  const [qrType, setQrType] = useState<'producto' | 'almacen'>('producto')
 
   useEffect(() => {
     loadProducts()
@@ -66,12 +155,64 @@ function ProductsTable() {
     return 'text-green-600'
   }
 
-  return (
-    <>
-      <div className="card relative overflow-hidden">
-        {/* Decoración de fondo */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full -mr-32 -mt-32 opacity-30"></div>
-        
+  const handleExportToExcel = () => {
+    // Crear contenido CSV
+    const headers = ['Código', 'Nombre', 'Categoría', 'Stock Actual', 'Stock Mínimo', 'Ubicación', 'Estado']
+    const rows = products.map(p => {
+      const estado = p.stock_actual <= p.stock_minimo ? 'Crítico' 
+        : p.stock_actual <= p.stock_minimo * 1.5 ? 'Bajo' 
+        : 'Normal'
+      return [
+        p.codigo,
+        p.nombre,
+        p.categoria,
+        p.stock_actual,
+        p.stock_minimo,
+        p.ubicacion_bodega,
+        estado
+      ]
+    })
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.join(','))
+    ].join('\n')
+
+    // Descargar archivo
+    const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    const url = URL.createObjectURL(blob)
+    link.setAttribute('href', url)
+    link.setAttribute('download', `inventario_${new Date().toISOString().split('T')[0]}.csv`)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
+          </div>
+          <div className="flex gap-3">
+            <button 
+              onClick={handleExportToExcel}
+              className="group relative px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl shadow-lg hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 font-bold text-sm overflow-hidden"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-green-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <div className="relative flex items-center gap-2">
+                <span className="text-xl">📊</span>
+                <span>Descargar Excel</span>
+              </div>
+            </button>
+            <button 
+              onClick={() => setIsModalOpen(true)}
+              className="group relative px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl shadow-lg hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 font-bold text-sm overflow-hidden"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <div className="relative flex items-center gap-2">
+                <span className="text-xl">+</span>
+                <span>Agregar Producto</span>
+              </div>
+            </button>
+          </div>
+        </div>
         {showSuccess && (
           <div className="mb-6 bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 text-green-800 px-6 py-4 rounded-xl shadow-lg flex items-center animate-slide-up">
             <div className="flex items-center gap-4">
@@ -143,17 +284,40 @@ function ProductsTable() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 font-bold">{product.stock_minimo}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    <span className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-800 text-xs font-bold shadow-sm">
-                      {product.ubicacion_bodega}
-                    </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    {product.stock_actual <= product.stock_minimo ? (
-                      <span className="px-3 py-1.5 text-xs font-black rounded-lg bg-gradient-to-r from-red-100 to-red-200 text-red-800 shadow-md">⚠️ Crítico</span>
-                    ) : product.stock_actual <= product.stock_minimo * 1.5 ? (
-                      <span className="px-3 py-1.5 text-xs font-black rounded-lg bg-gradient-to-r from-orange-100 to-orange-200 text-orange-800 shadow-md">⚡ Bajo</span>
-                    ) : (
-                      <span className="px-3 py-1.5 text-xs font-black rounded-lg bg-gradient-to-r from-green-100 to-emerald-200 text-green-800 shadow-md">✓ Normal</span>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleShowQR(product, 'producto')}
+                        className="text-blue-600 hover:text-white hover:bg-blue-600 px-3 py-2 rounded-lg transition-all duration-200 font-bold shadow-sm hover:shadow-lg transform hover:scale-110"
+                        title="Ver QR del producto"
+                      >
+                        📱
+                      </button>
+                      <button
+                        onClick={() => handleShowQR(product, 'almacen')}
+                        className="text-purple-600 hover:text-white hover:bg-purple-600 px-3 py-2 rounded-lg transition-all duration-200 font-bold shadow-sm hover:shadow-lg transform hover:scale-110"
+                        title="Ver QR del almacén"
+                      >
+                        🏪
+                      </button>
+      <AddProductModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onAdd={handleAddProduct}
+      />
+
+      <QRModal
+        isOpen={qrModalOpen}
+        onClose={() => setQrModalOpen(false)}
+        product={selectedProduct}
+        type={qrType}
+      />
+    </>
+  )
+}
+
+export default ProductsTableclassName="px-3 py-1.5 text-xs font-black rounded-lg bg-gradient-to-r from-green-100 to-emerald-200 text-green-800 shadow-md">✓ Normal</span>
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
